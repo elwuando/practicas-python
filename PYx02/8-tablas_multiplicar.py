@@ -3,12 +3,12 @@
 
 opcion = ''
 
-for tabla_multiplicacion in range(1, 6): # Maldito seas y seras
+for tabla_multiplicacion in range(1, 6):
     while opcion != 'no':
         opcion = input('¿Deseas ver la siguiente tabla?: ').lower()
         if opcion == 'si':
             for numero in range(1, 11):
-                tablas =  tabla_multiplicacion * numero
+                tablas = tabla_multiplicacion * numero
                 print(f'{tabla_multiplicacion}*{numero}={tablas}')
             break
         elif opcion == 'no':
