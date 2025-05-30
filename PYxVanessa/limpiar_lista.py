@@ -24,14 +24,14 @@ def limpiar_numeros_celulares(lista_cruda):
 
     for valor in lista_cruda:
         numero = str(valor)
-        re.sub(r'\D', '', numero)
-
+        numero = re.sub(r'\D', '', numero)
+        
         if  numero.startswith('00'):
             numero = numero[2:]
         
         if  numero.startswith('0'):
             numero = numero[1:]
-        
+
         if numero.startswith('57'):
             numero = numero[2:]
         
@@ -46,3 +46,4 @@ def limpiar_numeros_celulares(lista_cruda):
 
 lista_valida = limpiar_numeros_celulares(lista_cruda)
 print(lista_valida)
+print(len(lista_valida))
