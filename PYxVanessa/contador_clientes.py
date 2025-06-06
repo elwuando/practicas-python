@@ -3,8 +3,9 @@
 # método actual que usa libretas y archivos de Excel desordenados.
 
 salida = {}
+continuar = 'si'
 
-while True:
+while continuar == 'si':
 
     fecha = input('Fecha (Año-Mes-Dia): ')
     clientes = int(input('Numero de clientes: '))
@@ -28,7 +29,6 @@ while True:
 
     if continuar != 'si':
         print(f'\n{salida}')
-        break
 
 '''salida = {
     'la33': [
