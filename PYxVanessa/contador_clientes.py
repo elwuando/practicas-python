@@ -6,12 +6,11 @@ salida = {}
 
 while True:
 
-    fecha = input('Fecha (AAAA-MM-DD): ')
+    fecha = input('Fecha (Año-Mes-Dia): ')
     clientes = int(input('Numero de clientes: '))
     facturas = int(input('Numero de facturas: '))
     valor = float(input('Valor total de ventas: '))
     almacen = input('Nombre del almacen: ')
-
 
     reporte_cliente = {
         'fecha': fecha,
@@ -20,26 +19,18 @@ while True:
         'valor_ventas': valor
     }
 
-    reportes = []
-
-    salida[almacen] = reportes
+    if almacen not in salida:
+        salida[almacen] = []
 
     salida[almacen].append(reporte_cliente)
-    
-    continuar = input('¿Desea ingresar otro reporte? (si/no): ').lower()    
-        
+
+    continuar = input('¿Desea ingresar otro reporte? (si/no): ').lower()
+
     if continuar != 'si':
-            print(f'\n{salida}')
-            break
+        print(f'\n{salida}')
+        break
 
-
-
-
-
-
-
-
-salida = {
+'''salida = {
     'la33': [
         {
             'fecha': '2025-06-04',
@@ -62,4 +53,4 @@ salida = {
             'valor_ventas': 1500000
         }
     ]
-}
+}'''
