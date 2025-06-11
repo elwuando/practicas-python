@@ -39,12 +39,15 @@ clientes = [
 # Recibe como parametro una lista
 def limpiar_numeros_celulares(clientes):
 
-    lista_valida = []
+    lista_corregida = []
+    lista_validos = []
+    lista_descartados = []
 
     for cliente in clientes:
-        
+
         numero = cliente.get('telefono', None)
         if numero is None:
+            lista_descartados.append((cliente,'Fue descartado por nos poseer telefono'))
             continue
 
         numero = re.sub(r'\D', '', str(numero))
@@ -59,14 +62,29 @@ def limpiar_numeros_celulares(clientes):
             numero = numero[2:]
 
         if len(numero) != 10:
+            lista_descartados.append((cliente,'Fue descartado por no tener 10 digitos'))
             continue
 
-        if numero.startswith('3'):
+        if not numero.startswith('3'):
+            lista_descartados.append((cliente, 'Fue descartado por no empezar con el prefijo 3'))
+            continue
+        else:
+            if cliente['telefono'] == numero:
+                lista_validos.append(cliente)
+
+        if cliente['telefono'] != numero:
             cliente['telefono'] = numero
-            lista_valida.append(cliente)
+            lista_corregida.append(cliente)
 
-    return lista_valida
+    return lista_validos, lista_corregida, lista_descartados
 
-lista_valida = limpiar_numeros_celulares(clientes)
-print(lista_valida)
-print(len(lista_valida))
+lista_validos, lista_corregida, lista_descartados = limpiar_numeros_celulares(clientes)
+
+print(lista_validos)
+print(len(lista_validos))
+
+print(f'\n{lista_corregida}')
+print(len(lista_corregida))
+
+print(f'\n{lista_descartados}')
+print(len(lista_descartados))
