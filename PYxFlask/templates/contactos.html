@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang='es'>
-<style>
-    table, th, td {
-  border:1px solid black;
-}
-</style>
 <head>
     <meta charset='UTF-8'/>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
     <title>Lista de contactos</title>
+    <style>
+    table, th, td {
+        border:1px solid black;
+    }
+</style>
 </head>
 <body>
+    <p>Lista de contactos</p>
+    <br>
+    <br>
+    <a href="/contactos?limpiar=True" ><button>Limpiar Lista</button></a>
+    <br>
+    <br>
     <table style="width:100%">
         <tr>
             <th>id</th>
@@ -27,6 +33,5 @@
 
     </table>
     <br>
-    <button type="button">Limpiar Telefonos</button>
 </body>
 </html>

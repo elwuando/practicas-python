@@ -88,6 +88,7 @@ def limpiar_celular():
 
 @app.route('/contactos')
 def contactos():
+    
 
     clientes = [
         {"id": "cliente001", "nombre": "Andrea López", "telefono": "300-456-7890"},
@@ -121,27 +122,31 @@ def contactos():
         {"id": "cliente029", "nombre": "Ricardo Méndez", "telefono": "321-0000"},
         {"id": "cliente030", "nombre": "Paula Castaño", "telefono": "3109990000"}
     ]
+
+    valido = request.args.get('limpiar', None)
     lista_valida = []
-    for cliente in clientes:
-        numero = cliente.get('telefono', None)
-        numero = re.sub(r'\D', '', numero)
-
-        if numero.startswith('00'):
-            numero = numero[2:]
-
-        if numero.startswith('0'):
-            numero = numero[1:]
-
-        if numero.startswith('57'):
-            numero = numero[2:]
-        
-        if len(numero) == 10 and numero.startswith('3'):
-            cliente['telefono'] = numero
-            lista_valida.append(cliente)
 
 
-    return render_template('contactos.html', clientes=lista_valida)
+    if valido == 'True':
+        for cliente in clientes:
+            numero = cliente.get('telefono', None)
+            numero = re.sub(r'\D', '', numero)
 
+            if numero.startswith('00'):
+                numero = numero[2:]
+
+            if numero.startswith('0'):
+                numero = numero[1:]
+
+            if numero.startswith('57'):
+                numero = numero[2:]
+            
+            if len(numero) == 10 and numero.startswith('3'):
+                cliente['telefono'] = numero
+                lista_valida.append(cliente)
+        return render_template('contactos.html', clientes=lista_valida )
+
+    return render_template('contactos.html', clientes=clientes)
 
 
 if __name__ == "__main__":
