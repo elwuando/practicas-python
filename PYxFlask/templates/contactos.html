@@ -11,18 +11,17 @@
 </style>
 </head>
 <body>
-    <p>Lista de contactos</p>
-    <br>
-    <br>
-    <a href="/contactos?limpiar=True" ><button>Limpiar Lista</button></a>
-    <br>
-    <br>
+    <p>Lista de contactos</p><br><br>
+
+    <a href="/contactos?limpiar=True" ><button>Limpiar Lista</button></a><br><br>
+    
     <table style="width:100%">
         <tr>
             <th>id</th>
             <th>nombre</th>
             <th>telefono</th>
         </tr>
+
         {% for cliente in clientes %}
         <tr>
             <td>{{ cliente.id }}</td>
@@ -31,7 +30,6 @@
         </tr>
         {% endfor %}
 
-    </table>
-    <br>
+    </table><br>
 </body>
 </html>

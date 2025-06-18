@@ -8,16 +8,15 @@
 <body>
 
     <form action='/limpiar' method='POST'>
-        <input type='text' name='celular' placeholder='Ingrese su celular' required>
-        <br>
-        <br>
-        <input type='submit' value='Enviar'>
-        <br>
+        <input type='text' name='celular' placeholder='Ingrese su celular' required><br><br>
+        <input type='submit' value='Enviar'><br>
         <input type='reset' value='Limpiar'>
     </form>
 
     {% if numero %}
+
     <h2>El numero {{ numero }} {{ mensaje }}</h2> 
+
     {% endif %}
 
 </body>

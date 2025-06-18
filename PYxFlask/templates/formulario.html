@@ -10,19 +10,16 @@
 <body>
 
     <form action='/formulario' method='POST'>
-        <input type='text' name='nombre' placeholder='Ingrese su nombre' required>
-        <br>
-        <br>
-        <input type='number' name='celular' placeholder='Ingrese su celular' required>
-        <br>
-        <br>
-        <input type='submit' value='Enviar'>
-        <br>
+        <input type='text' name='nombre' placeholder='Ingrese su nombre' required><br><br>
+        <input type='number' name='celular' placeholder='Ingrese su celular' required><br><br>
+        <input type='submit' value='Enviar'><br>
         <input type='reset' value='Limpiar'>
     </form>
 
     {% if nombre %}
-    <h3> {{ nombre }} {{ celular }} </h3> 
+
+    <h3> {{ nombre }} {{ celular }} </h3>
+
     {% endif %}
 
 </body>
