@@ -177,5 +177,33 @@ def contactos():
     return render_template('contactos.html', clientes=clientes)
 
 
+salida = {}
+
+
+@app.route('/conta-clientes', methods=['GET', 'POST'])
+def conta_clientes():
+    if request.method == 'POST':
+        fecha = request.form['fecha']
+        clientes = int(request.form['clientes'])
+        facturas = int(request.form['facturas'])
+        valor = float(request.form['valor'])
+        almacen = request.form['almacen']
+
+        reporte = {
+            'fecha': fecha,
+            'clientes': clientes,
+            'facturas': facturas,
+            'valor_ventas': valor
+        }
+
+        if almacen not in salida:
+            salida[almacen] = []
+
+        salida[almacen].append(reporte)
+
+        return render_template('formulario_cliente.html', datos=salida)
+    return render_template('formulario_cliente.html', datos=salida)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
