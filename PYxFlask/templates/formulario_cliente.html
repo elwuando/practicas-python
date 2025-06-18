@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Formulario de Reporte Diario</title>
+</head>
+<body>
+    <h1>Ingresar Reporte Diario</h1>
+    <form action='/conta-clientes' method='POST'>
+        <label for='fecha'>Fecha (Año-Mes-Día):</label><br>
+        <input type='date' id='fecha' name='fecha' required><br><br>
+
+        <label for='clientes'>Número de Clientes:</label><br>
+        <input type='number' id='clientes' name='clientes' min='0' required><br><br>
+
+        <label for='facturas'>Número de Facturas:</label><br>
+        <input type='number' id='facturas' name='facturas' min='0' required><br><br>
+
+        <label for='valor'>Valor Total de Ventas:</label><br>
+        <input type='number' id='valor' name='valor' min='0' step='0.01' required><br><br>
+
+        <label for='almacen'>Nombre del Almacén:</label><br>
+        <input type='text' id='almacen' name='almacen' required><br><br>
+
+        <input type='reset' value='Limpiar'><br><br>
+        <input type='submit' value='Registrar Reporte'>
+</form>
+    </form>
+    <h1>Reporte Diario</h1>
+    <table border='1' cellspacing='0' cellpadding='5'>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Clientes</th>
+                <th>Facturas</th>
+                <th>Valor Total</th>
+                <th>Almacén</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for almacen, reportes in datos.items() %}
+                {% for registro in reportes %}
+                    <tr>
+                        <td>{{ registro.fecha }}</td>
+                        <td>{{ registro.clientes }}</td>
+                        <td>{{ registro.facturas }}</td>
+                        <td>$ {{ registro.valor_ventas }}</td>
+                        <td>{{ almacen }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
