@@ -1,6 +1,6 @@
 # Importa la clase datetime desde el módulo estándar datetime
 from datetime import datetime
-import re
+import re, random
 # Importa la clase Flask desde el modulo Flask.
 from flask import Flask, render_template, request
 
@@ -176,20 +176,34 @@ def contactos():
 
     return render_template('contactos.html', clientes=clientes)
 
-
+'''reportes_almacen = [r for r in salida[almacen] if r.get('id') != id]'''
 salida = {}
 
 
 @app.route('/conta-clientes', methods=['GET', 'POST'])
 def conta_clientes():
+
+    accion = request.args.get('accion', None)
+
+    if accion == 'borrar':
+        nuevo_reporte = []
+        id = request.args.get('id', None)
+        almacen = request.args.get('almacen', None)
+        reportes_almacen = salida.get(almacen)
+
+        for reporte in reportes_almacen:
+            if reporte.get('id') != id:
+                nuevo_reporte.append(reporte)
+
     if request.method == 'POST':
-        fecha = request.form['fecha']
-        clientes = int(request.form['clientes'])
-        facturas = int(request.form['facturas'])
-        valor = float(request.form['valor'])
-        almacen = request.form['almacen']
+        fecha = request.form.get('fecha', None)
+        clientes = int(request.form.get('clientes', None))
+        facturas = int(request.form.get('facturas', None))
+        valor = float(request.form.get('valor', None))
+        almacen = request.form.get('almacen', None)
 
         reporte = {
+            'id': random.randint(1000,9999),
             'fecha': fecha,
             'clientes': clientes,
             'facturas': facturas,
@@ -201,9 +215,7 @@ def conta_clientes():
 
         salida[almacen].append(reporte)
 
-        return render_template('formulario_cliente.html', datos=salida)
     return render_template('formulario_cliente.html', datos=salida)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
