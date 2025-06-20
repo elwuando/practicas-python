@@ -1,6 +1,7 @@
 # Importa la clase datetime desde el módulo estándar datetime
 from datetime import datetime
-import re, random
+import re
+import random
 # Importa la clase Flask desde el modulo Flask.
 from flask import Flask, render_template, request
 
@@ -152,7 +153,6 @@ def contactos():
         {"id": "cliente030", "nombre": "Paula Castaño",
          "telefono": "3109990000"}
     ]
-
     valido = request.args.get('limpiar', None)
     lista_valida = []
     if valido == 'True':
@@ -176,24 +176,29 @@ def contactos():
 
     return render_template('contactos.html', clientes=clientes)
 
+
 '''reportes_almacen = [r for r in salida[almacen] if r.get('id') != id]'''
 salida = {}
 
 
 @app.route('/conta-clientes', methods=['GET', 'POST'])
 def conta_clientes():
-
+    # Extraemos el valor de accion y si no existe devuelve none
     accion = request.args.get('accion', None)
-
+    # Validamos la accion Borrar
     if accion == 'borrar':
+        # Lista vacia para guardar los reportes que no se eliminaran
         nuevo_reporte = []
-        id = request.args.get('id', None)
+        # obtenemos el ID del reporte que eliminaremos
+        id = int(request.args.get('id', None))
         almacen = request.args.get('almacen', None)
         reportes_almacen = salida.get(almacen)
 
         for reporte in reportes_almacen:
             if reporte.get('id') != id:
                 nuevo_reporte.append(reporte)
+        # Nueva lista filtrada pero sin el ID que borramos
+        salida[almacen] = nuevo_reporte
 
     if request.method == 'POST':
         fecha = request.form.get('fecha', None)
@@ -203,7 +208,7 @@ def conta_clientes():
         almacen = request.form.get('almacen', None)
 
         reporte = {
-            'id': random.randint(1000,9999),
+            'id': random.randint(1000, 9999),
             'fecha': fecha,
             'clientes': clientes,
             'facturas': facturas,
@@ -214,8 +219,8 @@ def conta_clientes():
             salida[almacen] = []
 
         salida[almacen].append(reporte)
-
     return render_template('formulario_cliente.html', datos=salida)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
