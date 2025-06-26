@@ -1,0 +1,30 @@
+{"Fecha": "2025/06/25 03:40:26", "Tipo": "Info", "Evento": "Validando archivos .BAK en carpeta origen", "archivo":"Nomina.xlsx","Ruta":"C:\Users\Plata\Pagamelo\Nomina", "Tamaño": "146 KB"}
+
+{"Fecha": "2025/06/25 02:50:07", "Tipo": "Success", "Evento": "Archivo copiado exitosamente al destino", "archivo":"Bitacora.pdf","Ruta":"C:\Users\soluciones.ti\Desktop\PRACTICAS\Bitacoras", "Tamaño": "426 MB"}
+
+{"Fecha": "2025/06/25 08:36:20", "Tipo": "Warning", "Evento": "El archivo fue omitido por estar en uso", "archivo":"Chorizo.jpg","Ruta":"C:\Users\soluciones.ti\ \PRACTICAS\hambre", "Tamaño": "78 KB"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
