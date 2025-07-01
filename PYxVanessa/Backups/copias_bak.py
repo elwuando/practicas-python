@@ -6,19 +6,19 @@ import logging
 # Definir cada funcion por proceso
 origen = 'D:\OneDrive - CONFECCIONES BRAVASS S.A.S\Documentos\practicas-python\PYxVanessa\Backups\origen'
 destino = 'D:\OneDrive - CONFECCIONES BRAVASS S.A.S\Documentos\practicas-python\PYxVanessa\Backups\destino'
+logs = 'D:\OneDrive - CONFECCIONES BRAVASS S.A.S\Documentos\practicas-python\PYxVanessa\Backups\logs'
 
 def validar_carpeta(origen):
     if not os.path.exists(origen):
-        logging.error(f'ERROR | Carpeta no existe | {origen}')
+        registrar_log('ERROR', 'La carpeta no existe en el origen', origen)
         return False
 
     if not os.access(origen, os.R_OK):
-        logging.error(f'ERROR | Sin permisos de lectura | {origen}')
+        registrar_log('ERROR', 'Sin permisos de lectura', origen)
         return False
-    
-    else:
-        logging.info(f'INFO | Carpeta válida y accesible | {origen}')
-        return True
+
+    registrar_log('INFO', 'Carpeta valida y accesible', origen)
+    return True
 
 def listar_archivos(origen):
     archivos = []
@@ -28,7 +28,8 @@ def listar_archivos(origen):
             archivos.append(archivo)
 
     if not archivos:
-        registrar_log('info', 'No se encontraron archivos .BAK', '', origen)
+        registrar_log('INFO', 'No se encontraron archivos .BAK', origen)
+        return False
 
     return archivos
 
@@ -39,27 +40,37 @@ def calcular_tamaño_total(origen, archivos):
         total += os.path.getsize(ruta)
     return total
 
-def registrar_log():
-    # Registrar cada evento según su acción.
-    pass
-
-
 def validar_espacio_disponible(destino, tamano_requerido):
     espacio_libre = psutil.disk_usage(destino).free
 
     if espacio_libre >= tamano_requerido:
-        registrar_log('info', 'Espacio suficiente en destino', '', destino, espacio_libre)
+        registrar_log('INFO', 'Espacio suficiente en destino', destino, espacio_libre)
         return True
     else:
-        registrar_log('warning', 'Espacio insuficiente en destino', '', destino, espacio_libre)
+        registrar_log('warning', 'Espacio insuficiente en destino', destino, espacio_libre)
         return False
-    
+
+def registrar_log(tipo, evento, ruta):
+    logs = {
+        'tipo': tipo,
+        'evento': evento,
+        'ruta': ruta
+    }
+    return logs
 
 def liberar_espacio():
     # Liberar espacio eliminando los backups más antiguos hasta contar con el espacio necesario para los nuevos backups 
     pass
 
-def validar_archivo():
+def validar_archivo(origen, Destino, usar_logging = True):
+    if not os.path.isfile(origen):
+        return False
+    if os.path.getsize(origen) == 0:
+        return False
+    
+    
+
+
     # Que no este bloqueado
     # Que pese mas de 0 MB
     # Si el archivo es valido moverlo a la carpeta Destino
