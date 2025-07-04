@@ -26,19 +26,19 @@ def registrar_log(tipo, evento, ruta):
     # Formatear manualmente como texto tipo dict
     mensaje = str(log)
 
-    logging.error(mensaje)
+    logging.info(mensaje)
 
 
 # Verifica que las dos carpetas existan y tengan permisos de lectura y/o escritura
 def validar_carpetas(origen, destino):
     # verifica el la carperta este ne el origen
     if not os.path.isdir(origen):
-        registrar_log('ERROR', 'La ruta no es un directorio', origen)
+        registrar_log('ERROR', 'La carpeta de origen no es un directorio', origen)
         return False
 
     # Verifica que la carpeta origen se pueda leer
     if not os.access(origen, os.R_OK):
-        registrar_log('ERROR', 'Sin permisos de lectura', origen)
+        registrar_log('ERROR', 'Sin permisos de lectura en origen', origen)
         return False
 
     # verifica que la carpeta destino existe
@@ -47,8 +47,8 @@ def validar_carpetas(origen, destino):
         return False
 
     # Verifica si se puede escribir en la carpeta destino
-    if not os.access(destino, os.W_OK):
-        registrar_log('ERROR', 'Sin permisos de escritura en destino', destino)
+    if not os.access(destino, os.R_OK):
+        registrar_log('ERROR', 'Sin permisos de lectura en destino', destino)
         return False
 
     registrar_log('INFO', 'Carpetas validas y accesibles', f'{origen} -> {destino}')
@@ -63,11 +63,12 @@ def listar_archivos(origen):
     for archivo in os.listdir(origen):
         if archivo.lower().endswith('.bak') and os.path.isfile(os.path.join(origen, archivo)):
             archivos.append(archivo)
-    registrar_log('INFO', f'Se encontraron {len(archivos)} archivos .BAK', origen)
 
     if not archivos:
         registrar_log('INFO', 'No se encontraron archivos .BAK', origen)
         return False
+    
+    registrar_log('INFO', f'Se encontraron {len(archivos)} archivos .BAK', origen)
 
     return archivos
 
@@ -75,21 +76,19 @@ def listar_archivos(origen):
 # Calcula el magnitud total de los archivos en bytes
 def calcular_magnitud_total(origen, archivos):
     total = 0
+
     for archivo in archivos:
-        try:
-            ruta = os.path.join(origen, archivo)
-            total += os.path.getsize(ruta)
-            registrar_log('INFO', f'Magnitud total de archivos .BAK: {total} bytes', origen)
-        except (FileNotFoundError, PermissionError, OSError):
-            continue
+        ruta = os.path.join(origen, archivo)
+        total += os.path.getsize(ruta)
+    registrar_log('INFO', f'Magnitud total de los archivos .BAK: {total} bytes', origen)
     return total
 
 
 # Verifica si hay espacio suficiente en la carpeta destino
-def validar_espacio_disponible(destino, magnitud_requerido):
+def validar_espacio_disponible(destino, magnitud_requerida):
     espacio_libre = psutil.disk_usage(destino).free
 
-    if espacio_libre >= magnitud_requerido:
+    if espacio_libre >= magnitud_requerida:
         registrar_log('INFO', f'Espacio suficiente en destino', destino)
         return True
     else:
@@ -99,7 +98,7 @@ def validar_espacio_disponible(destino, magnitud_requerido):
 
 # Elimina archivos .bak antiguos hasta liberar el espacio necesario
 def liberar_espacio(destino, espacio_necesario):
-    archivos = [os.path.join(destino, nombre) for nombre in os.listdir(destino) if nombre.endswith('.bak')]
+    archivos = [os.path.join(destino, nombre) for nombre in os.listdir(destino) if nombre.endswith('.bak')] # Comprencion de listas  
     archivos.sort(key=os.path.getmtime)  # Ordena por fecha de modificación (más antiguos primero)
     acumulado = 0
 
@@ -115,7 +114,7 @@ def liberar_espacio(destino, espacio_necesario):
 
 # Valida un archivo: existencia, magnitud > 0 y lo mueve al destino si es válido
 def validar_archivo(origen, destino):
-    if not os.path.isfile(origen):  # Verifica si el archivo existe
+    if not os.path.isfile(origen):  # Verifica que el origen sea un archivo
         return False
     if os.path.getsize(origen) == 0:  # Verifica si el archivo está vacío
         return False
@@ -128,6 +127,10 @@ def validar_archivo(origen, destino):
     except:
         registrar_log('ERROR', 'Error al mover el archivo', origen)
         return False
+
+
+def mover_archivo():
+    pass
 
 
 if __name__ == '__main__':
@@ -157,3 +160,5 @@ if __name__ == '__main__':
             registrar_log('INFO', 'El archivo se traslado correctamente', ruta_origen)
         else:
             registrar_log('ERROR', 'Error al trasladar el archivo, Archivo vacio', ruta_origen)
+
+
