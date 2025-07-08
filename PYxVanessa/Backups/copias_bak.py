@@ -12,6 +12,12 @@ destino = 'D:/OneDrive - CONFECCIONES BRAVASS S.A.S/Documentos/practicas-python/
 
 # Registra eventos como diccionario formateado en el log
 def registrar_log(tipo, evento, ruta):
+
+    carpeta_logs = 'logs'
+    # Si no existe la carpeta la crea
+    if not os.path.exists(carpeta_logs):
+        os.makedirs(carpeta_logs)
+
     # Verifica si el sistema de logging ya tiene configurado un manejador (handler); si no, lo configura
     if not logging.getLogger().hasHandlers():
         # Configuracion basica del logging, crea archivos log por fecha actual YYYY-MM-DD.log
@@ -75,7 +81,7 @@ def listar_archivos(origen):
 
     if not archivos:
         registrar_log('INFO', 'No se encontraron archivos .BAK', origen)
-        return False
+        return []
     # se registra cuantos fueron encontrados
     registrar_log('INFO', f'Se encontraron {len(archivos)} archivos .BAK', origen)
 
@@ -110,20 +116,27 @@ def liberar_espacio(destino, espacio_necesario):
     archivos = [os.path.join(destino, nombre) for nombre in os.listdir(destino) if nombre.endswith('.bak')]  # Comprencion de listas
     archivos.sort(key=os.path.getmtime)  # Ordena por fecha de modificacion (mas antiguos primero)
 
-    # Si solo hay un archivo .bak o menos, no se puede liberar mas espacio
-    if len(archivos) <= 1:
-        registrar_log('ERROR', 'No se puede liberar mas espacio. Solo se encuentra 1 archivo .BAK y se debe conservar.', destino)
-        return
+    # Fecha y hora actual
+    ahora = datetime.now()
 
     # contadores de espacio liberado y cantidad de archivos eliminados
     acumulado = 0
     eliminados = 0
 
     # Recorre todos los archivos .bak menos el mas reciente que seria el ultimo de la lista
-    for archivo in archivos[:-1]:
-        acumulado += os.path.getsize(archivo)
-        os.remove(archivo)
-        eliminados += 1
+    for archivo in archivos:
+        fecha_modificacion = datetime.fromtimestamp(os.path.getmtime(archivo))
+        dias_antiguedad = (ahora - fecha_modificacion).days
+        if dias_antiguedad < 30 or fecha_modificacion.date() == ahora.date():
+            continue
+
+        try:
+            acumulado += os.path.getsize(archivo)
+            os.remove(archivo)
+            eliminados += 1
+        except Exception as e:
+            registrar_log('ERROR', f'No se pudo eliminar el archivo: {e}', archivo)
+            continue
 
         if acumulado >= espacio_necesario:
             registrar_log('INFO', f'Se liberaron {acumulado} bytes eliminando {eliminados} archivo(s)', destino)
@@ -146,6 +159,18 @@ def validar_archivo(origen):
     registrar_log('INFO', 'El archivo es valido', origen)
     return True
 
+
+# Verifica si un archivo está bloqueado o en uso por otro proceso
+def archivo_bloqueado(ruta):
+    try:
+        # Intenta abrir el archivo en modo lectura binaria
+        with open(ruta, 'rb'):
+            return False  # El archivo no está bloqueado
+    except (OSError, PermissionError):
+        # Si ocurre un error al abrir el archivo es que esta bloqueado
+        return True  # El archivo está bloqueado o en uso
+
+
 # Traslada un archivo desde la carpeta origen hasta la carpeta destino
 def trasladar_archivo(origen, destino):
     try:
@@ -159,55 +184,31 @@ def trasladar_archivo(origen, destino):
         return False
 
 
-if __name__ == '__main__':
-
-    # Si las rutas no son validas o no tienen permisos
+def generar_backup():
     if not validar_carpetas(origen, destino):
-        exit()
+        return
 
-    # Si la lista esta vacia o hubo error finaliza
     archivos = listar_archivos(origen)
     if not archivos:
-        exit()
+        return
 
-    # Calcula el magnitud total de todos los archivos .bak listados
     magnitud_total = calcular_magnitud_total(origen, archivos)
-    # Verificar espacio en destino
+
     if not validar_espacio_disponible(destino, magnitud_total):
-
-        # Intentar liberar espacio con intencion de conservar minimo 1 .bak
-        archivos_bak = [archivo for archivo in os.listdir(destino) if archivo.endswith('.bak')]
-        archivos_bak = [os.path.join(destino, archivo) for archivo in archivos_bak]
-        archivos_bak.sort(key=os.path.getmtime)  # Ordena por fecha de modificacion, mas antiguos primero
-
-        if len(archivos_bak) <= 1:
-            registrar_log('ERROR', 'No se puede liberar mas espacio. Solo se encuentra 1 archivo .BAK y se debe conservar.', destino)
-            exit()
-
-        acumulado = 0
-        eliminados = 0
-
-        for archivo in archivos_bak[:-1]:
-            acumulado += os.path.getsize(archivo)
-            os.remove(archivo)
-            eliminados += 1
-
-            if acumulado >= magnitud_total:
-                registrar_log('INFO', f'Se liberaron {acumulado} bytes eliminando {eliminados} archivo(s)', destino)
-                break
-
-        # Verificar de nuevo si el espacio ahora es suficiente
+        liberar_espacio(destino, magnitud_total)
         if not validar_espacio_disponible(destino, magnitud_total):
-            registrar_log('ERROR', f'No se libero el espacio suficiente. Solo se liberaron {acumulado} bytes', destino)
-            exit()
-    # Validar y trasladar cada archivo individualmente
+            return
+
     for archivo in archivos:
         ruta_origen = os.path.join(origen, archivo)
-
-        if validar_archivo(ruta_origen):  # confirma que el archivo existe y no se encuentra vacio
-            if trasladar_archivo(ruta_origen, destino):  # Intenta mover el archivo al destino
-                registrar_log('INFO', 'El archivo se traslado correctamente', ruta_origen)
-            else:
-                registrar_log('ERROR', 'Error al trasladar el archivo', ruta_origen)
+        if archivo_bloqueado(ruta_origen):
+            registrar_log('WARNING', 'Archivo bloqueado. No se puede procesar en este momento.', ruta_origen)
+            continue
+        if validar_archivo(ruta_origen):
+            trasladar_archivo(ruta_origen, destino)
         else:
             registrar_log('ERROR', 'Archivo invalido o vacio', ruta_origen)
+
+
+if __name__ == '__main__':
+    generar_backup()
